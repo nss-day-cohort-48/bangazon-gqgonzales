@@ -16,9 +16,10 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         url = serializers.HyperlinkedIdentityField(
             view_name='user',
-            lookup_field = 'id'
+            lookup_field='id'
         )
-        fields = ('id', 'url', 'username', 'password', 'first_name', 'last_name', 'email', 'is_active', 'date_joined')
+        fields = ('id', 'url', 'username', 'password', 'first_name',
+                  'last_name', 'email', 'is_active', 'date_joined')
 
 
 class Users(ViewSet):
@@ -26,7 +27,6 @@ class Users(ViewSet):
     Purpose: Allow a user to communicate with the Bangazon database to GET PUT POST and DELETE Users.
     Methods: GET PUT(id) POST
 """
-
 
     def retrieve(self, request, pk=None):
         """Handle GET requests for single customer
@@ -41,8 +41,6 @@ class Users(ViewSet):
             return Response(serializer.data)
         except Exception as ex:
             return HttpResponseServerError(ex)
-
-
 
     def list(self, request):
         """Handle GET requests to user resource"""
