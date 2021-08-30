@@ -18,6 +18,26 @@ class CustomerSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class Customers(ViewSet):
+    """Get a list of all customers"""
+
+    def list(self, request):
+        try:
+            customers = Customer.objects.all()
+            serializer = CustomerSerializer(
+                customers, many=True, context={'request': request})
+            return Response(serializer.data)
+        except Exception as ex:
+            return HttpResponseServerError(ex)
+
+    def retrieve(self, request, pk=None):
+        """Get a single customer"""
+        try:
+            customer = Customer.objects.get(pk=pk)
+            serializer = CustomerSerializer(
+                customer, context={'request': request})
+            return Response(serializer.data)
+        except Exception as ex:
+            return HttpResponseServerError(ex)
 
     def update(self, request, pk=None):
         """
@@ -34,6 +54,7 @@ class Customers(ViewSet):
             HTTP/1.1 204 No Content
         """
         customer = Customer.objects.get(user=request.auth.user)
+        # customer.user = User.objects.get(pk=pk)
         customer.user.last_name = request.data["last_name"]
         customer.user.email = request.data["email"]
         customer.address = request.data["address"]
