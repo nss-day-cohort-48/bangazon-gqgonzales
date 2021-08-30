@@ -7,9 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
-from bangazonapi.models import Order, Customer, Product
-from bangazonapi.models import OrderProduct, Favorite
-from bangazonapi.models import Recommendation
+from bangazonapi.models import Order, Customer, Product, OrderProduct, Favorite, Recommendation
 from .product import ProductSerializer
 from .order import OrderSerializer
 
@@ -81,8 +79,9 @@ class Profile(ViewSet):
             }
         """
         try:
-            current_user = Customer.objects.get(user=4)
-            current_user.recommends = Recommendation.objects.filter(recommender=current_user)
+            current_user = Customer.objects.get(user=request.auth.user)
+            current_user.recommends = Recommendation.objects.filter(
+                recommender=current_user)
 
             serializer = ProfileSerializer(
                 current_user, many=False, context={'request': request})
