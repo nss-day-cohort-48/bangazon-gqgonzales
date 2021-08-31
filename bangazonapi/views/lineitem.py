@@ -36,17 +36,6 @@ class LineItems(ViewSet):
     #   attribute on this field.
     # queryset = OrderProduct.objects.all()
 
-    def list(self, request):
-        """Return all line items from all orders"""
-
-        # customer = Customer.objects.get(user=request.auth.user)
-        line_items = OrderProduct.objects.all()
-
-        serializer = LineItemSerializer(
-            line_items, many=True, context={'request': request})
-
-        return Response(serializer.data)
-
     def retrieve(self, request, pk=None):
         """
         @api {GET} /cart/:id DELETE line item from cart
