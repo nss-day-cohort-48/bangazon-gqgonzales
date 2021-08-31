@@ -17,6 +17,7 @@ class LineItemSerializer(serializers.HyperlinkedModelSerializer):
             lookup_field='id'
         )
         fields = ('id', 'url', 'order', 'product')
+        depth = 1
 
 
 class LineItems(ViewSet):
