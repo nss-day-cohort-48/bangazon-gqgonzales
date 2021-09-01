@@ -39,7 +39,6 @@ class Cart(ViewSet):
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
 
-
     def destroy(self, request, pk=None):
         """
         @api {DELETE} /cart/:id DELETE line item from cart
@@ -61,7 +60,6 @@ class Cart(ViewSet):
         line_item.delete()
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
-
 
     def list(self, request):
         """
