@@ -26,7 +26,6 @@ class Cart(ViewSet):
         try:
             open_order = Order.objects.get(
                 customer=current_user, payment_type__isnull=True)
-                # Investigate above??????
         except Order.DoesNotExist as ex:
             open_order = Order()
             open_order.created_date = datetime.datetime.now()
@@ -39,7 +38,6 @@ class Cart(ViewSet):
         line_item.save()
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
-
 
     def destroy(self, request, pk=None):
         """
@@ -62,7 +60,6 @@ class Cart(ViewSet):
         line_item.delete()
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
-
 
     def list(self, request):
         """
