@@ -121,4 +121,50 @@ class OrderTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json_response["payment_type"]["id"], 1)
 
-    # TODO: New line item is not added to closed order
+    # Create test that verifies that adding a product to the user's cart adds it to an open order
+    # and not a closed one.
+    def test_only_add_products_to_open_carts(self):
+        """
+        Test that verifies that adding a product to the user's cart adds it to an open order and not a closed one.
+        """
+        data = {"payment_type": 1}
+
+        # self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+        response = self.client.put("/orders/1", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Get cart and veryify payment type has been added
+        response = self.client.get("/orders/1", None, format='json')
+        json_response = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json_response["payment_type"]["id"], 1)
+
+        response = self.client.get("/profile/cart", None, format="json")
+        json_response = json.loads(response.content)
+
+        # Cool, now add a new product to the database
+        url = "/products"
+        data = {"name": "Scooter", "price": 800, "quantity": 12,
+                "description": "Moves fast!", "category_id": 1, "location": "Nashville"}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # And add new product to cart
+        url = "/cart"
+        data = {"product_id": 2}
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Finally, check the cart to see the contents.
+        # Should only have 1 item.
+        url = "/cart"
+        response = self.client.get(url, None, format='json')
+        json_response = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json_response["id"], 2)
+        self.assertEqual(json_response["size"], 1)
+        self.assertEqual(len(json_response["lineitems"]), 1)
