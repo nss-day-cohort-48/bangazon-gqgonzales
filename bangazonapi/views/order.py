@@ -1,4 +1,5 @@
 """View module for handling requests about customer order"""
+from bangazonapi.views.paymenttype import PaymentSerializer
 import datetime
 from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
@@ -6,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
 from rest_framework.decorators import action
-from bangazonapi.models import Order, Payment, Customer, Product, OrderProduct
+from bangazonapi.models import Order, Payment, Customer, Product, OrderProduct, payment
 from .product import ProductSerializer
 
 
@@ -29,6 +30,7 @@ class OrderSerializer(serializers.HyperlinkedModelSerializer):
     """JSON serializer for customer orders"""
 
     lineitems = OrderLineItemSerializer(many=True)
+    payment_type = PaymentSerializer()
 
     class Meta:
         model = Order
@@ -38,6 +40,8 @@ class OrderSerializer(serializers.HyperlinkedModelSerializer):
         )
         fields = ('id', 'url', 'created_date',
                   'payment_type', 'customer', 'lineitems')
+
+        depth = 1
 
 
 class Orders(ViewSet):
@@ -73,7 +77,7 @@ class Orders(ViewSet):
             customer = Customer.objects.get(user=request.auth.user)
             order = Order.objects.get(pk=pk, customer=customer)
             serializer = OrderSerializer(order, context={'request': request})
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Order.DoesNotExist as ex:
             return Response(
