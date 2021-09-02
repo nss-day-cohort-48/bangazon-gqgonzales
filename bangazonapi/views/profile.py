@@ -75,13 +75,31 @@ class Profile(ViewSet):
                             }
                         }
                     }
-                ]
+                ],
+                "recommendations": [
+                    {
+                        "product": {
+                            "id": 50,
+                            "name": "Escalade EXT"
+                        },
+                        "recommender": {
+                            "id": 7,
+                            "user": {
+                                "first_name": "Brenda",
+                                "last_name": "Long",
+                                "email": "brenda@brendalong.com"
+                            }
+        }
+    }
+]
             }
         """
         try:
             current_user = Customer.objects.get(user=request.auth.user)
-            current_user.recommends = Recommendation.objects.filter(
-                recommender=current_user)
+            # current_user.recommends = Recommendation.objects.filter(
+            #     recommender=current_user)
+            # current_user.recommendations = Recommendation.objects.filter(
+            #     customer=current_user)
 
             serializer = ProfileSerializer(
                 current_user, many=False, context={'request': request})
@@ -353,13 +371,23 @@ class ProfileProductSerializer(serializers.ModelSerializer):
 
 
 class RecommenderSerializer(serializers.ModelSerializer):
-    """JSON serializer for recommendations"""
+    """JSON serializer for outgoing recommendations"""
     customer = CustomerSerializer()
     product = ProfileProductSerializer()
 
     class Meta:
         model = Recommendation
         fields = ('product', 'customer',)
+
+
+class RecommendedSerializer(serializers.ModelSerializer):
+    """JSON serializer for incoming recommendations"""
+    recommender = CustomerSerializer()
+    product = ProfileProductSerializer()
+
+    class Meta:
+        model = Recommendation
+        fields = ('product', 'recommender',)
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -369,12 +397,13 @@ class ProfileSerializer(serializers.ModelSerializer):
         serializers
     """
     user = UserSerializer(many=False)
-    recommends = RecommenderSerializer(many=True)
+    outgoing_recs = RecommenderSerializer(many=True)
+    incoming_recs = RecommendedSerializer(many=True)
 
     class Meta:
         model = Customer
         fields = ('id', 'url', 'user', 'phone_number',
-                  'address', 'payment_types', 'recommends',)
+                  'address', 'payment_types', 'outgoing_recs', 'incoming_recs')
         depth = 1
 
 
