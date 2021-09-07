@@ -1,0 +1,1 @@
+from .views.products.expensiveproducts import expensive_products_list
