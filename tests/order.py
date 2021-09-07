@@ -1,7 +1,7 @@
 import json
 from rest_framework import status
 from rest_framework.test import APITestCase
-from bangazonapi.models import Customer, Order, OrderProduct, Product, Payment, ProductCategory
+from bangazonapi.models import Order, OrderProduct, Payment
 
 
 class OrderTests(APITestCase):
